@@ -16,12 +16,48 @@ management believes that maximizing the number of annual members will be key to 
 
 
 ## Scenario
-I play the role of a junior data analyst working on the marketing analyst team at Cyclistic. The director of marketing believes the company’s future success depends on maximizing the number of annual memberships. Therefore, the team wants to understand how casual riders and annual members use Cyclistic bikes differently. From these insights, we will design a new marketing strategy to convert casual riders into annual members. But first, Cyclistic executives must approve your recommendations, so they must be backed up with compelling data insights and professional data visualizations.
+I play the role of a junior data analyst working on the marketing analyst team at Cyclistic. The director of marketing believes the company’s future success depends on maximizing the number of annual memberships. Therefore, the team wants to understand how casual riders and annual members use Cyclistic bikes differently. From these insights, we will design a new marketing strategy to convert casual riders into annual members. My recommendations will be subject to approval by Cyclistic executives, so they must be backed up with compelling data insights and professional data visualizations.
+
 
 ### Ask
-The question I will be working on is 'How do annual members and casual riders use Cyclistic bikes differently?'  
+The question I will be working on is 'How do annual members and casual riders use Cyclistic bikes differently?' \
+I will be analysing data from the past 12 months and identify trends and insights to find out how annual members and casual riders differ in their use of Cyclistic's bikes
 
 
 ### Prepare
 Firstly I obtained the datasets of the latest 12 months (Jun 24 - May 25) from [this link](https://divvy-tripdata.s3.amazonaws.com/index.html). \
-[Note: As Cyclistic is a fictional company, the datasets used in this case study are made available by Motivate International Inc. under [this license](https://divvybikes.com/data-license-agreement).]
+
+
+As Cyclistic is a fictional company, this data comes from a public dataset made available by Motivate International Inc. under [this license](https://divvybikes.com/data-license-agreement).] Due to data-privacy issues, we will not have access to riders' personally identifiable information, meaning we wil not be able to determine if the same individual has purchased multiple single passes, nor will we be able to identify whether the users live in the general servicable area of our Cyclistic bikes.
+
+After downloading the 12 monthly datasets, I noticed that there were a total of more than 5 millions rows of data over the 12 datasets, and decided to combine them and analyse using Google Bigquery. 
+
+> create or replace table cyclistic-dataset-work.cyclistic_data.overall_table as \
+select *,'2024-06' as year_month from cyclistic-dataset-work.cyclistic_data.June24 \
+union all \
+select *,'2024-07' as year_month from cyclistic-dataset-work.cyclistic_data.July24 \
+union all \
+select *,'2024-08' as year_month from cyclistic-dataset-work.cyclistic_data.Aug24 \
+union all \
+select *,'2024-09' as year_month from cyclistic-dataset-work.cyclistic_data.Sep24 \
+union all \
+select *,'2024-10' as year_month from cyclistic-dataset-work.cyclistic_data.Oct24 \
+union all \
+select *,'2024-11' as year_month from cyclistic-dataset-work.cyclistic_data.Nov24 \
+union all \
+select *,'2024-12' as year_month from cyclistic-dataset-work.cyclistic_data.Dec24 \
+union all \
+select *,'2025-01' as year_month from cyclistic-dataset-work.cyclistic_data.Jan25 \
+union all \
+select *,'2025-02' as year_month from cyclistic-dataset-work.cyclistic_data.Feb25 \
+union all \
+select *,'2025-03' as year_month from cyclistic-dataset-work.cyclistic_data.Mar25 \
+union all \
+select *,'2025-04' as year_month from cyclistic-dataset-work.cyclistic_data.Apr25 \
+union all \
+> select *,'2025-05' as year_month from cyclistic-dataset-work.cyclistic_data.May25 \
+order by started_at;
+
+idea: add code in separate file (runable .sql file) and link it here?
+
+
