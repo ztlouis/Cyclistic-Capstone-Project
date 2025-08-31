@@ -25,39 +25,60 @@ I will be analysing data from the past 12 months and identify trends and insight
 
 
 ### Prepare
-Firstly I obtained the datasets of the latest 12 months (Jun 24 - May 25) from [this link](https://divvy-tripdata.s3.amazonaws.com/index.html). \
+Firstly I obtained the datasets of the latest 12 months (Jun 24 - May 25) from [this link](https://divvy-tripdata.s3.amazonaws.com/index.html). 
+
+Note: As Cyclistic is a fictional company, this data comes from a public dataset made available by Motivate International Inc. under [this license](https://divvybikes.com/data-license-agreement).
+
+Due to data-privacy issues, we will not have access to riders' personally identifiable information, meaning we wil not be able to determine if the same individual has purchased multiple single passes, nor will we be able to identify whether the users live in the general servicable area of our Cyclistic bikes.
+
+The data provided is ROCCC:
+
+R – Reliable: comes from a reputable company \
+O – Objective: it is objective data collected from users usage habits \
+C – Comparable: we are able to compare the data over the different months \
+C – Clear: each field in the dataset is well labeled and unambiguous \
+C – Current: the datasets are the latest 12 months of available data
+
+I analysed the data provided, the following are the fields and their data type, along with their function and what i found interesting about the data:
+
+| Field Name | Data Type | Function | Observations (if applicable)|
+| --- | :---:  |   ---  |    --- | 
+| ride_id | string  |   assigns each ride with an id  |   each ride id is unique with 16 alphanumeric characters  | 
+| rideable_type | string  |  type of bike, classic or electric   |  none   | 
+| started_at |  timestamp |   start time of ride  | none   | 
+| ended_at | timestamp  |   end time of ride  |   none | 
+|start_station_name  |  string |  name of bike station that the trip started from   |   none | 
+| start_station_id |  string |   id of start bike station  |  does not follow a fixed format, some are numeric while others are alphanumeric for example | 
+| end_station_name | string  |  name of bike station that the trip ended at |  none   | 
+| end_station_id |  string |   id of end bike station  | same observation as start_station_id    | 
+| start_lat |  float |  latitude of start station   |  rounding of latitude is not standardised, some are to 2 decimal places while others go up to 7 decimal places  | 
+| start_lng | float  |   longitude of start station  |  same issue as start_lat   | 
+| end_lat | float  | latitude of end station    |  same issue as start_lat   | 
+| end_lng |  float |   longitude of end station  |   same issue as start_lat  | 
+| member_casual |  string |  differentiates members from casual riders   |  none   | 
 
 
-As Cyclistic is a fictional company, this data comes from a public dataset made available by Motivate International Inc. under [this license](https://divvybikes.com/data-license-agreement).] Due to data-privacy issues, we will not have access to riders' personally identifiable information, meaning we wil not be able to determine if the same individual has purchased multiple single passes, nor will we be able to identify whether the users live in the general servicable area of our Cyclistic bikes.
+### Process
+I noticed that there were a total of more than 5 millions rows of data over the 12 datasets, and decided to combine and analyse them using Google Bigquery. 
 
-After downloading the 12 monthly datasets, I noticed that there were a total of more than 5 millions rows of data over the 12 datasets, and decided to combine them and analyse using Google Bigquery. 
+All the queries mentioned in this section can be found [here](https://github.com/ztlouis/Cyclistic-Capstone-Project/blob/main/Data%20Combining.sql)
 
-> create or replace table cyclistic-dataset-work.cyclistic_data.overall_table as \
-select *,'2024-06' as year_month from cyclistic-dataset-work.cyclistic_data.June24 \
-union all \
-select *,'2024-07' as year_month from cyclistic-dataset-work.cyclistic_data.July24 \
-union all \
-select *,'2024-08' as year_month from cyclistic-dataset-work.cyclistic_data.Aug24 \
-union all \
-select *,'2024-09' as year_month from cyclistic-dataset-work.cyclistic_data.Sep24 \
-union all \
-select *,'2024-10' as year_month from cyclistic-dataset-work.cyclistic_data.Oct24 \
-union all \
-select *,'2024-11' as year_month from cyclistic-dataset-work.cyclistic_data.Nov24 \
-union all \
-select *,'2024-12' as year_month from cyclistic-dataset-work.cyclistic_data.Dec24 \
-union all \
-select *,'2025-01' as year_month from cyclistic-dataset-work.cyclistic_data.Jan25 \
-union all \
-select *,'2025-02' as year_month from cyclistic-dataset-work.cyclistic_data.Feb25 \
-union all \
-select *,'2025-03' as year_month from cyclistic-dataset-work.cyclistic_data.Mar25 \
-union all \
-select *,'2025-04' as year_month from cyclistic-dataset-work.cyclistic_data.Apr25 \
-union all \
-> select *,'2025-05' as year_month from cyclistic-dataset-work.cyclistic_data.May25 \
-order by started_at;
+I combined the 12 datasets into one and added a 'year-month' column to differentiate the entries from different datasets.
 
-idea: add code in separate file (runable .sql file) and link it here?
+I also added the columns ride_length and dayOfWeek, which lists ride length in seconds and day of week of the ride respectively. These are useful fields that are easy to derive and are not included in the given dataset.
+
+Next, I checked for duplicate any duplicates in ride_id, which was supposed to be unique for each ride. I found that all entries in the ride_id column was indeed unique.
+
+MY next check for ride_id is that all 16 characters and no corruption(?)***************** of data
+
+I also checked to ensure that ride length was positive, and more than 30 seconds. Unfortunately there were some rows with negative ride length so we had to remove those.
+
+Although there was a substantial number of rows which was missing station data (such as start_station_id and start_station_name), I decided to keep the data as they were still able to serve as data point for our analysis of other aspects such as ride length and overall number of users.
+
+# TODO: add the code for above
+
+### Analyse
 
 
+
+  
