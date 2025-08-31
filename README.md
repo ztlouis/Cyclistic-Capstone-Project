@@ -44,7 +44,7 @@ I analysed the data provided, the following are the fields and their data type, 
 | Field Name | Data Type | Function | Observations (if applicable)|
 | --- | :---:  |   ---  |    --- | 
 | ride_id | string  |   assigns each ride with an id  |   each ride id is unique with 16 alphanumeric characters  | 
-| rideable_type | string  |  type of bike, classic or electric   |  none   | 
+| rideable_type | string  |  3 options of bike: classic bike, electric bike, electric scooter  |  none   | 
 | started_at |  timestamp |   start time of ride  | none   | 
 | ended_at | timestamp  |   end time of ride  |   none | 
 |start_station_name  |  string |  name of bike station that the trip started from   |   none | 
