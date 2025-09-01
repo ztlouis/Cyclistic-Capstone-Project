@@ -61,24 +61,133 @@ I analysed the data provided, the following are the fields and their data type, 
 ### Process
 I noticed that there were a total of more than 5 millions rows of data over the 12 datasets, and decided to combine and analyse them using Google Bigquery. 
 
-All the queries mentioned in this section can be found [here](https://github.com/ztlouis/Cyclistic-Capstone-Project/blob/main/Data%20Combining.sql)
+I combined the 12 datasets into one and added a 'year-month' column to keep track of the origin of each data point.
 
-I combined the 12 datasets into one and added a 'year-month' column to differentiate the entries from different datasets.
+```sql
+create or replace table cyclistic-dataset-work.cyclistic_data.overall_table as
+select *,'2024-06' as year_month from cyclistic-dataset-work.cyclistic_data.June24
+union all
+select *,'2024-07' as year_month from cyclistic-dataset-work.cyclistic_data.July24
+union all
+select *,'2024-08' as year_month from cyclistic-dataset-work.cyclistic_data.Aug24
+union all
+select *,'2024-09' as year_month from cyclistic-dataset-work.cyclistic_data.Sep24
+union all
+select *,'2024-10' as year_month from cyclistic-dataset-work.cyclistic_data.Oct24
+union all
+select *,'2024-11' as year_month from cyclistic-dataset-work.cyclistic_data.Nov24
+union all
+select *,'2024-12' as year_month from cyclistic-dataset-work.cyclistic_data.Dec24
+union all
+select *,'2025-01' as year_month from cyclistic-dataset-work.cyclistic_data.Jan25
+union all
+select *,'2025-02' as year_month from cyclistic-dataset-work.cyclistic_data.Feb25
+union all
+select *,'2025-03' as year_month from cyclistic-dataset-work.cyclistic_data.Mar25
+union all
+select *,'2025-04' as year_month from cyclistic-dataset-work.cyclistic_data.Apr25
+union all
+select *,'2025-05' as year_month from cyclistic-dataset-work.cyclistic_data.May25
+order by started_at;
+
+```
 
 I also added the columns ride_length and dayOfWeek, which lists ride length in seconds and day of week of the ride respectively. These are useful fields that are easy to derive and are not included in the given dataset.
 
+```sql
+create or replace table cyclistic-dataset-work.cyclistic_data.overall_table as
+select *,
+timestamp_diff(ended_at, started_at, second) as ride_length,
+format_timestamp('%A',started_at) as dayOfWeek
+from cyclistic-dataset-work.cyclistic_data.overall_table
+
+```
 Next, I checked for duplicate any duplicates in ride_id, which was supposed to be unique for each ride. I found that all entries in the ride_id column was indeed unique.
+```sql
+SELECT ride_id,
+count(*)
+FROM `cyclistic-dataset-work.cyclistic_data.overall_table`
+group by ride_id
+having count(*) > 1
+```
 
-MY next check for ride_id is that all 16 characters and no corruption(?)***************** of data
+I also ensured that ride length was positive, removing any rows with nonpositive ride length.
+```sql
+create or replace table cyclistic-dataset-work.cyclistic_data.overall_table as
+SELECT *
+FROM `cyclistic-dataset-work.cyclistic_data.overall_table`
+where ride_length > 0
 
-I also checked to ensure that ride length was positive, and more than 30 seconds. Unfortunately there were some rows with negative ride length so we had to remove those.
+```
 
-Although there was a substantial number of rows which was missing station data (such as start_station_id and start_station_name), I decided to keep the data as they were still able to serve as data point for our analysis of other aspects such as ride length and overall number of users.
 
-# TODO: add the code for above
+
+Although there was a substantial number of rows which was missing station data (such as start_station_id and start_station_name), I decided to keep the data as they were still able to serve as data points for our analysis of other aspects such as ride length and overall number of users.
+
 
 ### Analyse
+To analyse our data, I used both SQL and Tableau.
+
+First I checked for the total number of rides of botht casual riders and members, as well as their average ride times (in minutes).
+
+```sql
+SELECT 
+member_casual, 
+round(avg(ride_length)/60,2) as avg_ride_length_mins, 
+count(*) as number_of_rides 
+FROM cyclistic-dataset-work.cyclistic_data.overall_table 
+group by member_casual
+```
+
+
+Result: 
+
+<img width="507" height="80" alt="image" src="https://github.com/user-attachments/assets/d9d0198a-4a25-419e-ad63-9883efe658a8" />
+
+From the table above, we see that members take more rides than casual riders, however the average length of each ride is significantly shorter than that of casual riders.
+
+I plotted a histogram with bins of 2 minute intervals for ride length. 
+
+<img width="1463" height="724" alt="image" src="https://github.com/user-attachments/assets/f68e76a2-9820-468a-9668-dbaeeca023b6" />
+It is interesting that our histogram shows most of our rides are actually less than 10 minutes for both casual riders and members.
+
+This suggests that our data is right-skewed, a small number of riders with long ride lengths are bringing up the average. In fact, from the slider below, you can see that it is very skewed, with ride lengths stretching all the way to multiple hours. 
+
+One reason could be that members can start a ride anytime at no additional cost, but for casual riders, they might try to save on rental fees by purchasing a single-ride pass instead of a full-day pass, yet use the bike for a whole day, assuming that single-ride passes are cheaper than full-day passes. However, without information on the type of pass for each trip, we cannot be sure.
+
+Next, we plotted the number of rides for each month, split into casual riders and members.
+
+
+<img width="1454" height="715" alt="image" src="https://github.com/user-attachments/assets/a74129b0-595e-4044-8801-ed8983ba7686" />
+
+We observe two things:
+1) Members consistently take more rides than casual riders, which is expected since we already know that number of rides by members is higher from our previous query
+2) The overall trend of rides is the same for both casual riders and members, suggesting a factor that effects all riders equally. One such factor might be the changing seasons. Rides peak around July to September where it is warm, and bottom out in December to February, which is during winter.
+
+---
+
+Next we will look at day of week
+
+Number of Rides by Day of Week
+<img width="1460" height="727" alt="image" src="https://github.com/user-attachments/assets/07683d03-62fe-485e-b060-30f2dd427827" />
+
+Median Trip Length by Day of Week
+<img width="1463" height="724" alt="image" src="https://github.com/user-attachments/assets/b44f72a5-8ab5-4da7-bf09-3146ccbac5d6" />
+
+From the 2 graphs above, we can see that there are more rides by members during weekdays while rides by casual riders peak in the weekends. 
+Additionally, ride length for casual riders peak during weekends while that of members remains stable throughout the week. To mitigate the problem
+
+
+delete below
+
+Of the 7 days in a week, members typically ride more during weekdays, while casual riders ride more in the weekends. This could be due to members using our bikes to commute to and from work, while casual riders use our bikes for leisure or to get around the city while not working. 
+
+Next we analyse the effects of day of week on trip length for members and casual riders. To reduce the impact of outliers on our results I have used the median trip length for calculation instead of average trip length.
+We can see that ride length for casual riders peak during weekends while that of members remains stable throughout the week. Casual riders could be buying one day pass and using the same bike to visit multiple places, only returning their bikes when they are done for the day to save on rental, while members can start a trip anytime at no additonal cost.
+
+<img width="1468" height="691" alt="image" src="https://github.com/user-attachments/assets/83ed2be3-08d0-49b2-91bf-c890da87fbc9" />
 
 
 
-  
+
+
