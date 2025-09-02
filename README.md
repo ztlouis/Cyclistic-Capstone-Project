@@ -178,16 +178,21 @@ From the 2 graphs above, we can see that there are more rides by members during 
 Additionally, ride length for casual riders peak during weekends while that of members remains stable throughout the week. To mitigate the problem
 
 
-delete below
+### Share
+After analysing our data, I have compiled it into a tableau dashboard to explain our findings to our stakeholders. 
 
-Of the 7 days in a week, members typically ride more during weekdays, while casual riders ride more in the weekends. This could be due to members using our bikes to commute to and from work, while casual riders use our bikes for leisure or to get around the city while not working. 
+<img width="1434" height="803" alt="image" src="https://github.com/user-attachments/assets/a2718ea3-f565-44cf-9407-9cb933dacca9" />
 
-Next we analyse the effects of day of week on trip length for members and casual riders. To reduce the impact of outliers on our results I have used the median trip length for calculation instead of average trip length.
-We can see that ride length for casual riders peak during weekends while that of members remains stable throughout the week. Casual riders could be buying one day pass and using the same bike to visit multiple places, only returning their bikes when they are done for the day to save on rental, while members can start a trip anytime at no additonal cost.
+To summarise our findings, the number of rides taken by both members and casual riders are heavily influenced by the changing season, with warmer months seeing more rides taken. 
+Overall, most rides are under 30 minutes, with a relatively small number of riders with hours of ride time per trip.
+Our target group, casual riders, tend to take more rides during weekends. These rides also tend to be longer than those taken during the weekdays.
 
-<img width="1468" height="691" alt="image" src="https://github.com/user-attachments/assets/83ed2be3-08d0-49b2-91bf-c890da87fbc9" />
+### Act
+Based on these findings, here are what I would recommend:
+1) Introduce more types of Membership plans. Instead of only an annual membership, introduce weekend and seasonal memberships since that is when most casual riders use our bikes. This will encourage them to sign up for membership as our current annual membership may be too much of a commitment for them.
+2) Benefits for new members. Improve sign up bonuses for new members, such as free single-ride passes. This will incentivise casual riders who frequently use our bikes to sign up for membership.
+3) Set up a points system to reward long time members. They accumulate points based on how long they remain as a member, which can then be redeemed for rewards. This would encourage casual riders to sign up for membership and maintain it.
 
 
-
-
-
+## Conclusion
+To summarise, our datasets provided key insights on the usage patterns of our Cyclistic bikes. Although more insight could be derived should we have had more data to link users with the rides that they made, the current data is sufficient to analyse overall usage patterns of all users and we are able to come to a conclusion on how to best convert current casual riders into members.
